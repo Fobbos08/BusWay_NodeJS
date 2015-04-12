@@ -2,6 +2,39 @@
  * Created by Эмиль on 10.04.2015.
  */
 var http = require('http');
+var queryOverpass = require('query-overpass');
+
+exports.searchRoute = function(latitude, longitude, around, routerCallback)
+{
+    around = 500;
+    latitude = 53.67287;
+    longitude = 23.83165;
+    var callback = function(response){
+        console.log(response);
+        var json = JSON.parse(response.replace("undefined",""));
+        var relations = '{"relations":[';
+        var bool = false;
+        for(var i=0; i<json.elements.length; i++)
+        {
+            if (json.elements[i].type === 'relation' )
+            {
+                if (bool)
+                {
+                    relations += ",";
+                }
+                else
+                {
+                    bool = true;
+                }
+                relations += JSON.stringify(json.elements[i]);
+
+            }
+        }
+        var jj = JSON.parse(relations+="]}");
+        routerCallback(json.elements);
+    };
+    getRelations(latitude,longitude,around,callback);
+}
 
 exports.getStations = function(latitude, longitude, around, routerCallback)
 {
@@ -18,13 +51,21 @@ exports.getStations = function(latitude, longitude, around, routerCallback)
 
 function getPlatforms(latitude, longitude, around, callback){
     var query = '?data=[out:json];node[public_transport=platform](around:'+around+','+latitude+','+longitude+');out;';
-    return getByQuery(query, callback);
+    var call = function (error, data) {
+        callback(data);//work with error
+    }
+    queryOverpass.query_overpass(query, call);
+    //return getByQuery(query, callback);
 }
 
 function getRelations(latitude, longitude, around, callback){
     var query = '?data=[out:json];node[public_transport=platform](around:'+around+','+latitude+','+longitude+');relation(bn)->.x;(._;<;);out;';
     return getByQuery(query, callback);
 }
+
+
+
+
 
 function getByQuery(query, callback)
 {
