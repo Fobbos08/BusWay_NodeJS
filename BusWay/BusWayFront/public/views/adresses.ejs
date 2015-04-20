@@ -1,0 +1,9 @@
+<ul>
+    <%adresses.length%>
+    <% for(var i=0; i<adresses.length; i++) {%>
+        <li><a href="#" class="target-address" lat='<%= adresses[i].lat %>' lon='<%= adresses[i].lon %>'><%= adresses[i].display_name %></a></li>
+    <% } %>
+</ul>
+<script type="text/javascript">
+    $('.target-address').bind("click", getRoute);
+</script>

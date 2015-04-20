@@ -2,7 +2,6 @@
  * Created by Эмиль on 10.04.2015.
  */
 var http = require('http');
-var queryOverpass = require('query-overpass');
 
 exports.searchRoute = function(latitude, longitude, around, routerCallback)
 {
@@ -11,7 +10,7 @@ exports.searchRoute = function(latitude, longitude, around, routerCallback)
     longitude = 23.83165;
     var callback = function(response){
         console.log(response);
-        var json = JSON.parse(response.replace("undefined",""));
+        var json = JSON.parse(response);
         var relations = '{"relations":[';
         var bool = false;
         for(var i=0; i<json.elements.length; i++)
@@ -38,12 +37,9 @@ exports.searchRoute = function(latitude, longitude, around, routerCallback)
 
 exports.getStations = function(latitude, longitude, around, routerCallback)
 {
-    around = 500;
-    latitude = 53.67287;
-    longitude = 23.83165;
     var callback = function(response){
         console.log(response);
-        var json = JSON.parse(response.replace("undefined",""));
+        var json = JSON.parse(response);
         routerCallback(json.elements);
     };
     getPlatforms(latitude, longitude, around, callback);
@@ -51,21 +47,19 @@ exports.getStations = function(latitude, longitude, around, routerCallback)
 
 function getPlatforms(latitude, longitude, around, callback){
     var query = '?data=[out:json];node[public_transport=platform](around:'+around+','+latitude+','+longitude+');out;';
-    var call = function (error, data) {
-        callback(data);//work with error
-    }
-    queryOverpass.query_overpass(query, call);
+    getByQuery(query, callback);
     //return getByQuery(query, callback);
+}
+
+exports.getPlatformByRef = function(ref, callback){
+    var query = '?data=[out:json];node('+ref+');out;';
+    getByQuery(query, callback);
 }
 
 function getRelations(latitude, longitude, around, callback){
     var query = '?data=[out:json];node[public_transport=platform](around:'+around+','+latitude+','+longitude+');relation(bn)->.x;(._;<;);out;';
     return getByQuery(query, callback);
 }
-
-
-
-
 
 function getByQuery(query, callback)
 {
@@ -74,7 +68,7 @@ function getByQuery(query, callback)
         host: 'overpass-api.de',
         path: '/api/interpreter'+query
     };
-    var str;
+    var str="";
     var req = http.get(options, function(res) {
         res.on('data', function (chunk) {
             str += chunk;
