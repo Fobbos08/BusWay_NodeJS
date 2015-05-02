@@ -24,8 +24,8 @@ router.post('/getAdresses', function(req, res, next){
 router.post('/getRoutes', function(req, res, next){
     var callback = function(result){
         res.header("Access-Control-Allow-Origin", "*");
-        var js = JSON.parse(result);
-        res.json({adresses: js})
+        //var js = JSON.parse(result);
+        res.json({route: result})
     }
     routeHelper.getRoute(req.body.latitude,req.body.longitude, req.body.targetLat, req.body.targetLon, callback);
 });

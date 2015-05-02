@@ -68,7 +68,7 @@ function getRoute(e) {
         lon = 23.83165;
         //lat= position.coords.latitude;
         //lon = position.coords.longitude;
-        getRoute2(e, lat, lon);
+        getRouteBuses(e, lat, lon);
     }
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(call);
@@ -77,7 +77,7 @@ function getRoute(e) {
     }
 }
 
-function getRoute2(e, lat, lon)
+function getRouteBuses(e, lat, lon)
 {
     $.get('/views/route.ejs', function (template) {
         var func = ejs.compile(template);
@@ -86,8 +86,8 @@ function getRoute2(e, lat, lon)
             data: {
                 latitude: lat,
                 longitude: lon,
-                targetLat: e.toElement.attributes.lat.value,
-                targetLon: e.toElement.attributes.lon.value
+                targetLat: e.target.attributes.lat.value,
+                targetLon: e.target.attributes.lon.value
             },
             dataType: 'json',
             type: "post",

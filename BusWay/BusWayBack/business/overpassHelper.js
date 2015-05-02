@@ -61,6 +61,11 @@ function getRelations(latitude, longitude, around, callback){
     return getByQuery(query, callback);
 }
 
+exports.getRelationsByStationRef = function(ref, callback){
+    var query = '?data=[out:json];node('+ref+');relation(bn)->.x;(._;<;);out;';
+    return getByQuery(query, callback);
+}
+
 function getByQuery(query, callback)
 {
     // An object of options to indicate where to post to
